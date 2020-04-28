@@ -1,0 +1,14 @@
+
+bayesmh deaths = ({A1[fips]} + ({A2[fips]}-{A1[fips]})*exp(-exp({A3[fips]})*(ndate-1))), likelihood(binomial(detected)) prior({A1[fips]}, normal({b1}, 1)) prior({A2[fips]}, normal({b2}, 1)) prior({A3[fips]}, normal({b3}, 1) ) prior({b1}, cauchy(0, 2.5)) prior({b2}, cauchy(0, 2.5)) prior({b3}, cauchy(0, 2.5)) nchains(3) thinning(100) burnin(10000) saving(newrun22025.dta, replace)    
+
+capture log close
+log using newrun22025.log, replace
+estimates save estnewrun22025, replace
+bayespredict {_ysim}, saving(newrunpred22025, replace) rseed(16)
+bayesstats grubin _all 
+bayesstats summary (invlogit({b1}))  
+bayesstats summary _all
+bayesstats summary A1[fips]   
+bayesstats summary (invlogit({A1[fips]}))  
+bayesgraph diagnostic _all 
+log close
